@@ -1,131 +1,530 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>My Photography Portfolio</title>
-    
-    <!-- Swiper.js Stylesheet (Handles the presentation slider structure) -->
-    <link rel="stylesheet" href="https://jsdelivr.net" />
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#11110f">
+  <meta name="description" content="A curated photography portfolio, presented frame by frame.">
+  <title>Photography Portfolio | Selected Frames</title>
 
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            background-color: #121212; /* Dark background to highlight photography */
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            min-height: 100vh;
-            overflow: hidden; /* Prevents vertical scrolling */
-        }
+  <!-- First frame is the only image requested by the initial HTML page. -->
+  <link rel="preload" as="image" href="images/1.png" fetchpriority="high">
 
-        /* Container that frames your presentation */
-        .swiper {
-            width: 90vw;
-            max-width: 1200px;
-            height: auto;
-            aspect-ratio: 16 / 9; /* Matches standard Canva presentation dimensions */
-            border-radius: 8px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.7);
-        }
+  <style>
+    :root {
+      color-scheme: dark;
+      --bg: #11110f;
+      --panel: #1c1b19;
+      --text: #f4f1e9;
+      --muted: #aaa69e;
+      --faint: #716e68;
+      --line: rgba(244, 241, 233, .16);
+      --accent: #d5ba92;
+      --radius: 7px;
+    }
 
-        .swiper-slide {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background: #121212;
-        }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+      -webkit-font-smoothing: antialiased;
+      background:
+        radial-gradient(ellipse 80% 48% at 50% -18%, rgba(168, 137, 95, .11), transparent 85%),
+        var(--bg);
+    }
+    button, a { -webkit-tap-highlight-color: transparent; }
+    button { font: inherit; }
+    button:focus-visible, a:focus-visible { outline: 2px solid var(--accent); outline-offset: 5px; }
+    button:disabled { cursor: not-allowed; opacity: .3; }
+    a { color: inherit; }
 
-        /* Keeps images perfectly contained and sharp */
-        .swiper-slide img {
-            width: 100%;
-            height: 100%;
-            object-fit: contain; 
-        }
+    .container { width: min(1320px, calc(100% - 84px)); margin: 0 auto; }
+    .site-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      min-height: 92px;
+      border-bottom: 1px solid var(--line);
+    }
+    .brand { display: inline-flex; align-items: center; gap: 12px; text-decoration: none; }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 31px;
+      height: 31px;
+      border: 1px solid var(--accent);
+      border-radius: 50%;
+      color: var(--accent);
+      font: 19px/1 Georgia, serif;
+    }
+    .brand-copy { font-size: 11px; font-weight: 650; letter-spacing: .27em; text-transform: uppercase; }
+    .header-side { color: var(--muted); font-size: 10px; letter-spacing: .22em; text-transform: uppercase; white-space: nowrap; }
 
-        /* Customizes navigation arrow colours to match a minimal design */
-        .swiper-button-next, .swiper-button-prev {
-            color: #ffffff !important;
-            opacity: 0.7;
-            transition: opacity 0.2s;
-        }
-        .swiper-button-next:hover, .swiper-button-prev:hover {
-            opacity: 1;
-        }
+    .intro {
+      display: flex;
+      justify-content: space-between;
+      align-items: end;
+      gap: 30px;
+      padding: clamp(28px, 4.6vw, 55px) 0 clamp(23px, 3vw, 34px);
+    }
+    .eyebrow { color: var(--accent); font-size: 10px; font-weight: 650; letter-spacing: .24em; text-transform: uppercase; }
+    h1 { margin: 11px 0 0; font: 400 clamp(37px, 4.65vw, 69px)/1.08 Georgia, "Times New Roman", serif; letter-spacing: -.055em; }
+    h1 em { color: var(--accent); font-weight: 400; }
+    .intro-note { max-width: 200px; margin: 0 2px 3px 0; color: var(--muted); font-size: 12px; line-height: 1.75; text-align: right; }
 
-        /* Customizes pagination dots */
-        .swiper-pagination-bullet {
-            background: #ffffff !important;
-        }
-    </style>
+    .presentation { width: 100%; }
+    .stage {
+      position: relative;
+      isolation: isolate;
+      display: grid;
+      place-items: center;
+      overflow: hidden;
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #060606;
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: var(--radius);
+      box-shadow: 0 28px 70px rgba(0, 0, 0, .32);
+      touch-action: pan-y;
+    }
+    .stage::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 50% 50%, #20201f, #070707 75%);
+      z-index: -1;
+    }
+    .stage-image {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain; /* Crucial: do not crop the Canva slide or photos. */
+      user-select: none;
+      -webkit-user-drag: none;
+    }
+    .stage-tag {
+      position: absolute;
+      top: 18px;
+      left: 20px;
+      display: inline-flex;
+      gap: 9px;
+      align-items: center;
+      padding: 9px 12px;
+      border: 1px solid rgba(255, 255, 255, .17);
+      border-radius: 3px;
+      background: rgba(12, 12, 12, .61);
+      color: #fff;
+      backdrop-filter: blur(9px);
+      font-size: 9px;
+      font-weight: 650;
+      letter-spacing: .18em;
+      text-transform: uppercase;
+      pointer-events: none;
+    }
+    .stage-tag::before { content: ""; width: 5px; height: 5px; border-radius: 50%; background: var(--accent); }
+    .stage-actions { position: absolute; right: 17px; top: 17px; display: flex; gap: 8px; }
+    .stage-action {
+      display: inline-grid;
+      place-items: center;
+      width: 37px;
+      height: 37px;
+      padding: 0;
+      color: #fff;
+      background: rgba(12, 12, 12, .67);
+      border: 1px solid rgba(255, 255, 255, .2);
+      border-radius: 4px;
+      cursor: pointer;
+      backdrop-filter: blur(9px);
+      transition: border-color .2s, background .2s;
+    }
+    .stage-action:hover { background: #2b2926; border-color: var(--accent); }
+    .stage-action svg { width: 16px; height: 16px; fill: none; stroke: currentColor; stroke-width: 1.7; stroke-linejoin: round; stroke-linecap: round; }
+
+    .notice {
+      position: absolute;
+      inset: 0;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      gap: 15px;
+      padding: 24px;
+      background: rgba(8, 8, 8, .83);
+      color: var(--text);
+      text-align: center;
+      font-size: 13px;
+      line-height: 1.65;
+      backdrop-filter: blur(3px);
+      z-index: 2;
+    }
+    .notice.show { display: flex; }
+    .loader { width: 23px; height: 23px; border: 2px solid rgba(255, 255, 255, .18); border-top-color: var(--accent); border-radius: 50%; animation: spin .75s linear infinite; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .notice strong { font-weight: 550; }
+    .notice small { max-width: 440px; color: var(--muted); font-size: 11px; overflow-wrap: anywhere; }
+    .retry-button { padding: 9px 16px; color: var(--text); background: transparent; border: 1px solid var(--accent); border-radius: 4px; cursor: pointer; }
+
+    .toolbar { display: flex; align-items: center; gap: 24px; padding: 20px 2px 20px; }
+    .nav-button {
+      display: inline-flex;
+      gap: 11px;
+      align-items: center;
+      padding: 8px 0;
+      flex: 0 0 auto;
+      border: 0;
+      background: transparent;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 650;
+      letter-spacing: .15em;
+      text-transform: uppercase;
+    }
+    .nav-button .circle-arrow {
+      display: grid;
+      place-items: center;
+      width: 37px;
+      height: 37px;
+      border: 1px solid var(--line);
+      border-radius: 50%;
+      font-size: 19px;
+      font-weight: 400;
+      letter-spacing: 0;
+      transition: color .2s, border-color .2s, transform .2s;
+    }
+    .nav-button:not(:disabled):hover .circle-arrow { color: var(--accent); border-color: var(--accent); transform: scale(1.06); }
+    .counter-group { display: flex; align-items: center; gap: 19px; flex: 1; min-width: 0; justify-content: center; }
+    .count { font-size: 12px; font-variant-numeric: tabular-nums; letter-spacing: .09em; white-space: nowrap; }
+    .count .total { color: var(--faint); }
+    .progress-track { width: min(250px, 100%); height: 1px; background: var(--line); }
+    .progress-fill { width: calc(100% / 17); height: 2px; margin-top: -1px; background: var(--accent); transition: width .4s ease; }
+
+    .index-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 8px 0 14px; color: var(--faint); font-size: 9px; font-weight: 650; letter-spacing: .19em; text-transform: uppercase; }
+    .index-heading .hint { font-weight: 400; letter-spacing: .07em; text-transform: none; }
+    .filmstrip { display: grid; grid-template-columns: repeat(17, minmax(0, 1fr)); gap: 5px; padding-bottom: 8px; }
+    .frame-button {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 9px;
+      padding: 12px 0 9px;
+      border: 1px solid transparent;
+      background: transparent;
+      color: var(--faint);
+      font-size: 10px;
+      font-variant-numeric: tabular-nums;
+      cursor: pointer;
+      transition: color .2s;
+    }
+    .frame-button::before { content: ""; width: 100%; height: 2px; background: var(--line); transition: background .2s, height .2s; }
+    .frame-button:hover { color: var(--text); }
+    .frame-button:hover::before { background: rgba(213, 186, 146, .55); }
+    .frame-button.active { color: var(--accent); }
+    .frame-button.active::before { background: var(--accent); height: 3px; }
+
+    .site-footer { display: flex; justify-content: space-between; align-items: center; gap: 24px; margin-top: 28px; padding: 22px 0 29px; border-top: 1px solid var(--line); color: var(--faint); font-size: 10px; letter-spacing: .11em; }
+    .site-footer a { color: var(--muted); text-decoration: none; border-bottom: 1px solid var(--line); }
+    .site-footer a:hover { color: var(--accent); }
+    .mobile-only { display: none; }
+
+    .presentation:fullscreen, .presentation:-webkit-full-screen {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      background: #060606;
+      padding: 16px;
+    }
+    .presentation:fullscreen .stage, .presentation:-webkit-full-screen .stage {
+      width: 100%;
+      min-height: 0;
+      height: calc(100vh - 116px);
+      height: calc(100dvh - 116px);
+      aspect-ratio: auto;
+      border: none;
+      box-shadow: none;
+    }
+    .presentation:fullscreen .toolbar, .presentation:-webkit-full-screen .toolbar { padding: 10px 24px 4px; }
+    .presentation:fullscreen .index-heading, .presentation:fullscreen .filmstrip,
+    .presentation:-webkit-full-screen .index-heading, .presentation:-webkit-full-screen .filmstrip { display: none; }
+
+    @media (max-width: 720px) {
+      .container { width: calc(100% - 34px); }
+      .site-header { min-height: 69px; }
+      .header-side { font-size: 9px; letter-spacing: .08em; }
+      .intro { padding: 30px 0 25px; align-items: start; }
+      .intro-note { display: none; }
+      h1 { font-size: clamp(36px, 7.6vw, 53px); }
+      .stage-tag { top: 9px; left: 9px; padding: 6px 8px; font-size: 8px; }
+      .stage-actions { top: 8px; right: 8px; }
+      .stage-action { width: 29px; height: 29px; }
+      .stage-action svg { width: 14px; height: 14px; }
+      .toolbar { gap: 11px; padding: 15px 0; }
+      .nav-button { gap: 7px; font-size: 0; }
+      .nav-button .circle-arrow { width: 38px; height: 38px; font-size: 18px; }
+      .counter-group { gap: 10px; }
+      .progress-track { width: min(140px, 100%); }
+      .index-heading .hint { display: none; }
+      .filmstrip { display: flex; overflow-x: auto; scrollbar-width: thin; gap: 4px; padding-bottom: 14px; scroll-snap-type: x proximity; }
+      .frame-button { min-width: 35px; flex: 0 0 35px; scroll-snap-align: center; }
+      .site-footer { margin-top: 8px; font-size: 9px; letter-spacing: 0; }
+      .mobile-only { display: inline; }
+    }
+    @media (max-width: 430px) {
+      .header-side { display: none; }
+      h1 { font-size: 35px; }
+      .stage-tag { display: none; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0s !important; animation-duration: .01ms !important; }
+    }
+  </style>
 </head>
 <body>
+  <header class="site-header container">
+    <a class="brand" href="#top" aria-label="Photography Portfolio, top of page">
+      <span class="brand-mark" aria-hidden="true">◌</span>
+      <span class="brand-copy">Photography / Portfolio</span>
+    </a>
+    <span class="header-side">A visual collection <span aria-hidden="true">&nbsp;·&nbsp;</span> 17 frames</span>
+  </header>
 
-    <!-- Slider Main Container -->
-    <div class="swiper">
-                <!-- Additional required wrapper -->
-        <div class="swiper-wrapper">
-            <!-- Slide 1 & 2 load normally so the page opens instantly -->
-            <div class="swiper-slide"><img src="images/1.png" alt="Slide 1"></div>
-            <div class="swiper-slide"><img src="images/2.png" alt="Slide 2"></div>
-            
-            <!-- Slides 3 to 17 use loading="lazy" to stop the browser from getting stuck -->
-            <div class="swiper-slide"><img src="images/3.png" alt="Slide 3" loading="lazy"></div>
-            <div class="swiper-slide"><img src="images/4.png" alt="Slide 4" loading="lazy"></div>
-            <div class="swiper-slide"><img src="images/5.png" alt="Slide 5" loading="lazy"></div>
-            <div class="swiper-slide"><img src="images/6.png" alt="Slide 6" loading="lazy"></div>
-            <div class="swiper-slide"><img src="images/7.png" alt="Slide 7" loading="lazy"></div>
-            <div class="swiper-slide"><img src="images/8.png" alt="Slide 8" loading="lazy"></div>
-            <div class="swiper-slide"><img src="images/9.png" alt="Slide 9" loading="lazy"></div>
-            <div class="swiper-slide"><img src="images/10.png" alt="Slide 10" loading="lazy"></div>
-            <div class="swiper-slide"><img src="images/11.png" alt="Slide 11" loading="lazy"></div>
-            <div class="swiper-slide"><img src="images/12.png" alt="Slide 12" loading="lazy"></div>
-            <div class="swiper-slide"><img src="images/13.png" alt="Slide 13" loading="lazy"></div>
-            <div class="swiper-slide"><img src="images/14.png" alt="Slide 14" loading="lazy"></div>
-            <div class="swiper-slide"><img src="images/15.png" alt="Slide 15" loading="lazy"></div>
-            <div class="swiper-slide"><img src="images/16.png" alt="Slide 16" loading="lazy"></div>
-            <div class="swiper-slide"><img src="images/17.png" alt="Slide 17" loading="lazy"></div>
+  <main id="top" class="container">
+    <section class="intro" aria-labelledby="page-title">
+      <div>
+        <div class="eyebrow">Selected work <span aria-hidden="true">/</span> The collection</div>
+        <h1 id="page-title">Photography, <em>in frames.</em></h1>
+      </div>
+      <p class="intro-note">A collection of photographs, presented one frame at a time.</p>
+    </section>
+
+    <section class="presentation" id="presentation" aria-label="Photography slideshow">
+      <div class="stage" id="stage" aria-label="Portfolio image viewer">
+        <!-- Keep this real image in the HTML so it appears even before JavaScript runs. -->
+        <img id="slide-image" class="stage-image" src="images/1.png" alt="Photography portfolio, frame 1 of 17" width="1920" height="1080" decoding="async" loading="eager" fetchpriority="high">
+        <span class="stage-tag" aria-hidden="true">Viewing the collection</span>
+
+        <div class="stage-actions">
+          <a id="open-original" class="stage-action" href="images/1.png" target="_blank" rel="noopener" aria-label="Open this image in a new tab" title="Open image to zoom">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 4h6v6M20 4l-9 9M20 14v6H4V4h6" /></svg>
+          </a>
+          <button id="fullscreen-button" class="stage-action" type="button" aria-label="Enter fullscreen" title="Toggle fullscreen (F)">
+            <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 9V4h5M15 4h5v5M20 15v5h-5M9 20H4v-5" /></svg>
+          </button>
         </div>
 
-        
-        <!-- Navigation buttons (Arrows) -->
-        <div class="swiper-button-prev"></div>
-        <div class="swiper-button-next"></div>
+        <div class="notice" id="notice" role="status" aria-live="polite">
+          <div class="loader" id="loader" aria-hidden="true"></div>
+          <strong id="notice-title">Loading the next frame…</strong>
+          <small id="notice-detail"></small>
+          <button class="retry-button" id="retry-button" type="button" hidden>Try again</button>
+        </div>
+      </div>
 
-        <!-- Pagination (Dots at the bottom) -->
-        <div class="swiper-pagination"></div>
-    </div>
+      <div class="toolbar" aria-label="Slideshow controls">
+        <button class="nav-button" id="previous" type="button" aria-label="Previous frame" disabled>
+          <span class="circle-arrow" aria-hidden="true">←</span> Previous
+        </button>
+        <div class="counter-group">
+          <span class="count" aria-live="polite" aria-atomic="true"><span id="current-number">01</span><span class="total"> / 17</span></span>
+          <div class="progress-track" role="progressbar" id="progress-track" aria-label="Slideshow progress" aria-valuemin="1" aria-valuemax="17" aria-valuenow="1">
+            <div id="progress-fill" class="progress-fill"></div>
+          </div>
+        </div>
+        <button class="nav-button" id="next" type="button" aria-label="Next frame">
+          Next <span class="circle-arrow" aria-hidden="true">→</span>
+        </button>
+      </div>
 
-    <!-- Swiper.js Script (Handles the movement mechanics) -->
-    <script src="https://jsdelivr.net"></script>
+      <div class="index-heading">
+        <span>Frame index</span>
+        <span class="hint">Click a number · Use ← → keys · Swipe on mobile</span>
+      </div>
+      <div class="filmstrip" id="filmstrip" role="group" aria-label="Jump to a frame"></div>
+    </section>
 
-    <!-- Initialise Swiper -->
-    <script>
-        const swiper = new Swiper('.swiper', {
-            loop: false, // Stops looping back to slide 1 at the end
-            speed: 600,  // Animation speed in milliseconds (smooth presentation transition)
-            
-            // Enables arrow navigation
-            navigation: {
-                nextEl: '.swiper-button-next',
-                prevEl: '.swiper-button-prev',
-            },
+    <footer class="site-footer">
+      <span>Photography portfolio <span aria-hidden="true">/</span> Selected frames</span>
+      <span>Made to be viewed slowly.</span>
+    </footer>
+  </main>
 
-            // Enables dots navigation
-            pagination: {
-                el: '.swiper-pagination',
-                clickable: true,
-            },
+  <script>
+    "use strict";
 
-            // Enables keyboard navigation (Left/Right arrows on Mac)
-            keyboard: {
-                enabled: true,
-                onlyInViewport: true,
-            },
-        });
-    </script>
+    // CONFIGURATION: Your existing files are images/1.png through images/17.png.
+    // After converting ALL slides to WebP, change png to webp here, above in the
+    // image src/href attributes, AND in the preload link in <head>.
+    const TOTAL_FRAMES = 17;
+    const IMAGE_EXTENSION = "png";
+    const imagePath = (index) => `images/${index + 1}.${IMAGE_EXTENSION}`;
+
+    const slideImage = document.getElementById("slide-image");
+    const openOriginal = document.getElementById("open-original");
+    const previous = document.getElementById("previous");
+    const next = document.getElementById("next");
+    const filmstrip = document.getElementById("filmstrip");
+    const currentNumber = document.getElementById("current-number");
+    const progress = document.getElementById("progress-fill");
+    const progressTrack = document.getElementById("progress-track");
+    const notice = document.getElementById("notice");
+    const loader = document.getElementById("loader");
+    const noticeTitle = document.getElementById("notice-title");
+    const noticeDetail = document.getElementById("notice-detail");
+    const retryButton = document.getElementById("retry-button");
+    const presentation = document.getElementById("presentation");
+    const stage = document.getElementById("stage");
+    const fullscreenButton = document.getElementById("fullscreen-button");
+
+    let currentIndex = 0;
+    let requestedIndex = 0;
+    let requestSerial = 0;
+    let touchStart = null;
+    const cache = new Map();
+    const frameButtons = [];
+
+    // Only load requested images plus the nearest neighbours; no 17-image burst.
+    function loadImage(index) {
+      if (cache.has(index)) return cache.get(index);
+      const promise = new Promise((resolve, reject) => {
+        const preload = new Image();
+        preload.decoding = "async";
+        preload.onload = () => resolve(preload);
+        preload.onerror = () => reject(new Error(`Could not load ${imagePath(index)}`));
+        preload.src = imagePath(index);
+        if (preload.complete && preload.naturalWidth > 0) resolve(preload);
+      });
+      cache.set(index, promise);
+      promise.catch(() => { if (cache.get(index) === promise) cache.delete(index); });
+      return promise;
+    }
+
+    function prefetchNeighbors(index) {
+      [index + 1, index - 1].filter(i => i >= 0 && i < TOTAL_FRAMES)
+        .forEach(i => { loadImage(i).catch(() => {}); });
+    }
+
+    function setNotice(state, detail = "") {
+      notice.classList.toggle("show", state !== "hidden");
+      loader.hidden = state !== "loading";
+      retryButton.hidden = state !== "error";
+      noticeTitle.textContent = state === "error" ? "This frame couldn't be loaded." : "Loading the next frame…";
+      noticeDetail.textContent = detail;
+    }
+
+    function updateControls(index) {
+      previous.disabled = index === 0;
+      next.disabled = index === TOTAL_FRAMES - 1;
+      currentNumber.textContent = String(index + 1).padStart(2, "0");
+      progress.style.width = `${((index + 1) / TOTAL_FRAMES) * 100}%`;
+      progressTrack.setAttribute("aria-valuenow", String(index + 1));
+      frameButtons.forEach((button, i) => {
+        const active = i === index;
+        button.classList.toggle("active", active);
+        button.setAttribute("aria-current", active ? "true" : "false");
+      });
+    }
+
+    async function goToFrame(index) {
+      if (index < 0 || index >= TOTAL_FRAMES) return;
+      requestedIndex = index;
+      const thisRequest = ++requestSerial;
+      updateControls(index);
+
+      if (index === currentIndex && slideImage.complete && slideImage.naturalWidth > 0) {
+        setNotice("hidden");
+        return;
+      }
+      setNotice("loading");
+      try {
+        const loaded = await loadImage(index);
+        if (thisRequest !== requestSerial) return; // Ignore stale requests after quick navigation.
+        if (typeof loaded.decode === "function") {
+          try { await loaded.decode(); } catch (_) { /* onload already succeeded */ }
+        }
+        if (thisRequest !== requestSerial) return;
+        slideImage.src = imagePath(index);
+        slideImage.alt = `Photography portfolio, frame ${index + 1} of ${TOTAL_FRAMES}`;
+        openOriginal.href = imagePath(index);
+        currentIndex = index;
+        setNotice("hidden");
+        prefetchNeighbors(index);
+      } catch (error) {
+        if (thisRequest !== requestSerial) return;
+        setNotice("error", `Check that ${imagePath(index)} exists in your GitHub repository. Filenames are case-sensitive.`);
+      }
+    }
+
+    for (let i = 0; i < TOTAL_FRAMES; i++) {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "frame-button";
+      button.textContent = String(i + 1).padStart(2, "0");
+      button.setAttribute("aria-label", `Go to frame ${i + 1}`);
+      button.addEventListener("click", () => goToFrame(i));
+      filmstrip.appendChild(button);
+      frameButtons.push(button);
+    }
+
+    previous.addEventListener("click", () => goToFrame(requestedIndex - 1));
+    next.addEventListener("click", () => goToFrame(requestedIndex + 1));
+    retryButton.addEventListener("click", () => goToFrame(requestedIndex));
+
+    document.addEventListener("keydown", (event) => {
+      if (event.altKey || event.ctrlKey || event.metaKey || event.target.closest("input, textarea, select")) return;
+      if (event.key === "ArrowRight") { event.preventDefault(); goToFrame(requestedIndex + 1); }
+      if (event.key === "ArrowLeft") { event.preventDefault(); goToFrame(requestedIndex - 1); }
+      if (event.key === "Home") { event.preventDefault(); goToFrame(0); }
+      if (event.key === "End") { event.preventDefault(); goToFrame(TOTAL_FRAMES - 1); }
+      if (event.key.toLowerCase() === "f" && !event.repeat) toggleFullscreen();
+    });
+
+    stage.addEventListener("touchstart", (event) => {
+      if (event.touches.length !== 1) return;
+      touchStart = { x: event.touches[0].clientX, y: event.touches[0].clientY };
+    }, { passive: true });
+    stage.addEventListener("touchend", (event) => {
+      if (!touchStart || event.changedTouches.length !== 1) return;
+      const dx = event.changedTouches[0].clientX - touchStart.x;
+      const dy = event.changedTouches[0].clientY - touchStart.y;
+      touchStart = null;
+      if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.35) {
+        goToFrame(requestedIndex + (dx < 0 ? 1 : -1));
+      }
+    }, { passive: true });
+
+    async function toggleFullscreen() {
+      try {
+        if (document.fullscreenElement) await document.exitFullscreen();
+        else if (presentation.requestFullscreen) await presentation.requestFullscreen();
+      } catch (_) { /* Browser may reject fullscreen, e.g. some mobile browsers. */ }
+    }
+    fullscreenButton.addEventListener("click", toggleFullscreen);
+    document.addEventListener("fullscreenchange", () => {
+      const isFullscreen = Boolean(document.fullscreenElement);
+      fullscreenButton.setAttribute("aria-label", isFullscreen ? "Exit fullscreen" : "Enter fullscreen");
+      fullscreenButton.title = isFullscreen ? "Exit fullscreen (F / Esc)" : "Toggle fullscreen (F)";
+    });
+    if (!presentation.requestFullscreen) fullscreenButton.hidden = true;
+
+    // Start with frame 1 rendered directly by HTML, then warm up frame 2.
+    updateControls(0);
+    const initialImageReady = () => {
+      setNotice("hidden");
+      prefetchNeighbors(0);
+    };
+    if (slideImage.complete) {
+      if (slideImage.naturalWidth > 0) initialImageReady();
+      else setNotice("error", `Check that ${imagePath(0)} exists in the images folder.`);
+    } else {
+      slideImage.addEventListener("load", initialImageReady, { once: true });
+      slideImage.addEventListener("error", () => setNotice("error", `Check that ${imagePath(0)} exists in the images folder.`), { once: true });
+    }
+  </script>
 </body>
 </html>
